@@ -2,12 +2,9 @@ Hi
 ********************
  TESTS 
 ********************
-TEST 1 PASSED
-TEST 2 PASSED
-TEST 3 FAILED : nb_boites=4
-Placement des boites dans le carton :
-1. Positionnez le carton avec le long coté vers soi.
-2. Positionnez (L*l*h) 1*1*3 = 3 carton(s) à plat avec le long côté de la boite dans le même sens que le long côté du carton
-3. Positionnez (L*l*h) 1*1*1 = 1 carton(s) sur la longue tranche avec le long côté de la boite dans le même sens que le petit côté du carton
-Vous avez maintenant placé 4 boite(s) dans le carton
-
+✅ TEST 1 PASSED with 79 % of the volume filled
+✅ TEST 2 PASSED with 77 % of the volume filled
+✅ TEST 3 PASSED with 100 % of the volume filled
+✅ TEST 4 PASSED with 90 % of the volume filled
+✅ TEST 5 PASSED with 100 % of the volume filled
+✅ TEST 6 PASSED with 71 % of the volume filled
