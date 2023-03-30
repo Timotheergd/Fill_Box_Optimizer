@@ -1,7 +1,7 @@
 def printf_clear():
-  with open('log.txt', 'w') as f:
-    f.write('Hi\n')
-  # pass
+  # with open('log.txt', 'w') as f:
+  #   f.write('Hi\n')
+  pass
 
 def printf(*text):
   with open('log.txt', 'a', newline=None) as f:
