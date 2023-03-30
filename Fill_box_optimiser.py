@@ -406,6 +406,6 @@ def test_all(_print=False):
 
 if __name__ == "__main__":
   printf_clear()
-  test_all(_print=False)
-  # main()
+  # test_all(_print=False)
+  main()
  
