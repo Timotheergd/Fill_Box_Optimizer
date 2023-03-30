@@ -92,20 +92,20 @@ class Carton(Boite):
       num_etape+=1
       rotation_text=""
       if step[0]==1:
-          rotation_text="à plat avec le long côté du présentoire dans le même sens que le long côté du carton"
+          rotation_text="à plat avec le long côté du présentoir dans le même sens que le long côté du carton"
       elif step[0]==2:
-          rotation_text="sur la longue tranche avec le long côté du présentoire dans le même sens que le long côté du carton"
+          rotation_text="sur la longue tranche avec le long côté du présentoir dans le même sens que le long côté du carton"
       elif step[0]==3:
-          rotation_text="à plat avec le long côté du présentoire dans le même sens que le court côté du carton"
+          rotation_text="à plat avec le long côté du présentoir dans le même sens que le court côté du carton"
       elif step[0]==4:
-          rotation_text="sur la petite tranche avec le long côté du présentoire dans le même sens que le long côté du carton"
+          rotation_text="sur la petite tranche avec le long côté du présentoir dans le même sens que le long côté du carton"
       elif step[0]==5:
-          rotation_text="sur la longue tranche avec le long côté du présentoire dans le même sens que le petit côté du carton"
+          rotation_text="sur la longue tranche avec le long côté du présentoir dans le même sens que le petit côté du carton"
       elif step[0]==6:
-          rotation_text="sur la petite tranche avec le long côté du présentoire dans le même sens que le petit côté du carton"
+          rotation_text="sur la petite tranche avec le long côté du présentoir dans le même sens que le petit côté du carton"
       
-      if print_to_console:print(f"{num_etape}. Positionnez (L*l*h) {step[1]}*{step[2]}*{step[3]} = {step[1]*step[2]*step[3]} présentoire(s) " + rotation_text)
-      text_to_print+=f"{num_etape}. Positionnez (L*l*h) {step[1]}*{step[2]}*{step[3]} = {step[1]*step[2]*step[3]} présentoire(s) " + rotation_text + "\n"
+      if print_to_console:print(f"{num_etape}. Positionnez (L*l*h) {step[1]}*{step[2]}*{step[3]} = {step[1]*step[2]*step[3]} présentoir(s) " + rotation_text)
+      text_to_print+=f"{num_etape}. Positionnez (L*l*h) {step[1]}*{step[2]}*{step[3]} = {step[1]*step[2]*step[3]} présentoir(s) " + rotation_text + "\n"
     if print_to_console:print(f"Vous avez maintenant placé {self.nb_boites} boite(s) dans le carton")
     text_to_print+=f"Vous avez maintenant placé {self.nb_boites} boite(s) dans le carton\n"
 
@@ -139,7 +139,7 @@ def possibilites(l):
 """
 
 def fill_carton(_carton,
-                presentoire,
+                presentoir,
                 fill_reste=True,
                 _carton_precedent=Carton(),
                 _print=False):
@@ -152,7 +152,7 @@ def fill_carton(_carton,
   # nb_cartons_total = nb_cartons_precedent
   # nb_cartons = 0
   n = 0  # pour savoir le nombre d'itération de dim
-  for dim in possibilites(presentoire.get_dim()):
+  for dim in possibilites(presentoir.get_dim()):
     carton = _carton.copy()
     cartons_reste = []
     carton_precedent = _carton_precedent.copy()   
@@ -194,7 +194,7 @@ def fill_carton(_carton,
     # if (fill_reste):
     # nb_cartons_total += nb_cartons
     if _print: 
-      printf("nb presentoires=", nb_L, "x", nb_l, "x", nb_h, " =", nb_L * nb_l * nb_h)
+      printf("nb presentoirs=", nb_L, "x", nb_l, "x", nb_h, " =", nb_L * nb_l * nb_h)
       printf("nb presentores du carton=", nb_L, "x", nb_l, "x", nb_h, " =", carton.nb_boites)
       printf("total=", carton_precedent.nb_boites)
       printf("total=", carton_precedent.contenu)
@@ -218,7 +218,7 @@ def fill_carton(_carton,
         for c in cartons_reste:
           printf(c)
       for carton in cartons_reste:
-        best_little_carton_fill = fill_carton(carton, presentoire, False, carton_precedent.copy(), _print)
+        best_little_carton_fill = fill_carton(carton, presentoir, False, carton_precedent.copy(), _print)
         carton_precedent.combine(best_little_carton_fill)
 
         if carton_precedent > best_carton:
@@ -264,13 +264,13 @@ def validate_sizes():
     small_box_size = f"{small_box_width} x {small_box_height} x {small_box_depth}"
 
     carton = Carton(int(big_box_width), int(big_box_depth), int(big_box_height))
-    presentoire = Boite(int(small_box_width), int(small_box_depth), int(small_box_height))
-    best_carton = fill_carton(carton, presentoire)
+    presentoir = Boite(int(small_box_width), int(small_box_depth), int(small_box_height))
+    best_carton = fill_carton(carton, presentoir)
 
     global root
     root.title("Resultat")
     root.geometry("1000x500")
-    result_label.config(text=f"Taille du carton: {big_box_size}\nTaille du présentoire: {small_box_size}\n\n" + str(best_carton.print_placement()))
+    result_label.config(text=f"Taille du carton: {big_box_size}\nTaille du présentoir: {small_box_size}\n\n" + str(best_carton.print_placement()))
     validation_label.config(text="")
     return True
 
@@ -314,7 +314,7 @@ def ui():
   big_box_height_entry.pack()
 
   global small_box_label
-  small_box_label = tk.Label(root, text="Présentoire")
+  small_box_label = tk.Label(root, text="présentoir")
   small_box_label.pack()
 
   global small_box_width_label
@@ -366,25 +366,25 @@ def main():
   
   # print("Carton")
   # carton.set_dim()
-  # presentoire = Boite(200, 99, 99) #test 1
+  # presentoir = Boite(200, 99, 99) #test 1
   # Nutripure = 180, 139, 65
   # LBE = 176, 106, 53
-  # presentoire = Boite(180, 139, 65) # test 2
-  # print("Presentoire")
-  # presentoire.set_dim()
+  # presentoir = Boite(180, 139, 65) # test 2
+  # print("presentoir")
+  # presentoir.set_dim()
 
-  # best_carton = fill_carton(carton, presentoire)
+  # best_carton = fill_carton(carton, presentoir)
   # ui(best_carton.print_placement())
   ui()
 
-def test_one_config(carton, presentoire, nb_boites_theorique, n, print=False):
+def test_one_config(carton, presentoir, nb_boites_theorique, n, print=False):
   if (print): printf("\n"*3+"+-"*20+"\n"*3)
-  best_carton = fill_carton(carton, presentoire, _print=print)
+  best_carton = fill_carton(carton, presentoir, _print=print)
   best_carton.print_placement(True)
   if best_carton.nb_boites == nb_boites_theorique:
-    printf(u"\u2705" + f" TEST {n} PASSED with {100*best_carton.nb_boites*presentoire.get_volume()//carton.get_volume()} % of the volume filled\n")
+    printf(u"\u2705" + f" TEST {n} PASSED with {100*best_carton.nb_boites*presentoir.get_volume()//carton.get_volume()} % of the volume filled\n")
   else:
-    printf(u"\u274C" + f" TEST {n} FAILED with {100*best_carton.nb_boites*presentoire.get_volume()//carton.get_volume()} % of the volume filled : nb_boites={best_carton.nb_boites}\n"+best_carton.print_placement())
+    printf(u"\u274C" + f" TEST {n} FAILED with {100*best_carton.nb_boites*presentoir.get_volume()//carton.get_volume()} % of the volume filled : nb_boites={best_carton.nb_boites}\n"+best_carton.print_placement())
 
 def num_test():
     if hasattr(num_test, "num"):
