@@ -92,17 +92,17 @@ class Carton(Boite):
       num_etape+=1
       rotation_text=""
       if step[0]==1:
-          rotation_text="à plat avec le long côté du présentoir dans le même sens que le long côté du carton"
+          rotation_text="à plat dans le sens de la longueur du carton"
       elif step[0]==2:
-          rotation_text="sur la longue tranche avec le long côté du présentoir dans le même sens que le long côté du carton"
+          rotation_text="sur la longue tranche, dans le sens de la longueur du carton"
       elif step[0]==3:
-          rotation_text="à plat avec le long côté du présentoir dans le même sens que le court côté du carton"
+          rotation_text="à plat dans le sens de la largeur du carton"
       elif step[0]==4:
-          rotation_text="sur la petite tranche avec le long côté du présentoir dans le même sens que le long côté du carton"
+          rotation_text="sur la petite tranche, parallèle à la longueur du carton"
       elif step[0]==5:
-          rotation_text="sur la longue tranche avec le long côté du présentoir dans le même sens que le petit côté du carton"
+          rotation_text="sur la longue tranche, dans le sens de la largeur du carton"
       elif step[0]==6:
-          rotation_text="sur la petite tranche avec le long côté du présentoir dans le même sens que le petit côté du carton"
+          rotation_text="sur la petite tranche, parallèle à la largeur du carton"
       
       if print_to_console:print(f"{num_etape}. Positionnez (L*l*h) {step[1]}*{step[2]}*{step[3]} = {step[1]*step[2]*step[3]} présentoir(s) " + rotation_text)
       text_to_print+=f"{num_etape}. Positionnez (L*l*h) {step[1]}*{step[2]}*{step[3]} = {step[1]*step[2]*step[3]} présentoir(s) " + rotation_text + "\n"
@@ -286,7 +286,7 @@ def ui():
   root.geometry("400x350")
 
   global big_box_label
-  big_box_label = tk.Label(root, text="Carton")
+  big_box_label = tk.Label(root, text="Carton", font="Verdana 11 underline") 
   big_box_label.pack()
 
   global big_box_width_label
@@ -314,7 +314,7 @@ def ui():
   big_box_height_entry.pack()
 
   global small_box_label
-  small_box_label = tk.Label(root, text="présentoir")
+  small_box_label = tk.Label(root, text="Présentoir", font="Verdana 11 underline")
   small_box_label.pack()
 
   global small_box_width_label
