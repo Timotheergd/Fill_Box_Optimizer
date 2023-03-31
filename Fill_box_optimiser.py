@@ -94,22 +94,28 @@ class Carton(Boite):
       if step[0]==1:
           rotation_text="à plat dans le sens de la longueur du carton"
       elif step[0]==2:
-          rotation_text="sur la longue tranche, dans le sens de la longueur du carton"
+          rotation_text="verticalement sur la longue tranche, dans le sens de la longueur du carton"
       elif step[0]==3:
           rotation_text="à plat dans le sens de la largeur du carton"
       elif step[0]==4:
-          rotation_text="sur la petite tranche, parallèle à la longueur du carton"
+          rotation_text="verticalement sur la petite tranche, parallèle à la longueur du carton"
       elif step[0]==5:
-          rotation_text="sur la longue tranche, dans le sens de la largeur du carton"
+          rotation_text="verticalement sur la longue tranche, dans le sens de la largeur du carton"
       elif step[0]==6:
-          rotation_text="sur la petite tranche, parallèle à la largeur du carton"
+          rotation_text="verticalement sur la petite tranche, parallèle à la largeur du carton"
       
       if print_to_console:print(f"{num_etape}. Positionnez (L*l*h) {step[1]}*{step[2]}*{step[3]} = {step[1]*step[2]*step[3]} présentoir(s) " + rotation_text)
-      text_to_print+=f"{num_etape}. Positionnez (L*l*h) {step[1]}*{step[2]}*{step[3]} = {step[1]*step[2]*step[3]} présentoir(s) " + rotation_text + "\n"
-    if print_to_console:print(f"Vous avez maintenant placé {self.nb_boites} boite(s) dans le carton")
-    text_to_print+=f"Vous avez maintenant placé {self.nb_boites} boite(s) dans le carton\n"
-
+      text_to_print+=f"{num_etape}. Positionnez {step[1]*step[2]*step[3]} présentoir(s) " + rotation_text + "\n"
+    
     return text_to_print
+
+  def print_total(self, print_to_console=False):
+    if print_to_console:
+      print(f"Vous avez maintenant placé {self.nb_boites} boite(s) dans le carton")
+    text_to_print_start=f"Vous avez maintenant placé"
+    text_to_print_bold=f" {self.nb_boites} "
+    text_to_print_end=f"présentoir(s) dans le carton\n"
+    return (text_to_print_start, text_to_print_bold, text_to_print_end)
 
 def possibilites(l):
   # renvoie lensemble des arrangements possibles de la liste (3d)
@@ -268,10 +274,35 @@ def validate_sizes():
     best_carton = fill_carton(carton, presentoir)
 
     global root
+    
     root.title("Resultat")
     root.geometry("1000x500")
-    result_label.config(text=f"Taille du carton: {big_box_size}\nTaille du présentoir: {small_box_size}\n\n" + str(best_carton.print_placement()))
+    global result_label
+    
+    result_label.configure(state="normal")
+    result_label.delete("1.0",tk.END)
+    result_label.insert("1.0", f"Taille du carton: {big_box_size}\nTaille du présentoir: {small_box_size}\n\n" + str(best_carton.print_placement()))
+    end_pos = int(result_label.index("end").split(".")[0])
+    print(end_pos)
+
+    # result_label.tag_add("bold", "1.7", "1.12")
+    text_start, text_bold, text_end = best_carton.print_total()
+    
+    result_label.insert("end", text_start, ('normal'))
+    result_label.insert("end", text_bold, "Arial bold 12")
+    result_label.insert("end", text_end, ('normal'))
+    result_label.tag_add('text_bold',f"{int(end_pos)-1}.{len(text_start)}", f"{int(end_pos)-1}.{len(text_start)+len(text_bold)+14}")
+    result_label.tag_config('text_bold', font='arial 11 bold')
+
+    result_label.tag_configure("center", justify='center')
+    result_label.tag_add("center", "1.0", "end")
+
+    result_label.configure(state="disabled")
+    result_label.pack(fill="both")
+    
+
     validation_label.config(text="")
+    
     return True
 
 def on_confirm():
@@ -346,7 +377,7 @@ def ui():
   submit_button.pack()
 
   global result_label
-  result_label = tk.Label(root, text="")
+  result_label = tk.Text(root)
   result_label.pack()
 
   global validation_label
