@@ -274,7 +274,7 @@ def validate_sizes(debug=False):
 
     pallet = Pallet(int(big_box_width), int(big_box_depth), int(big_box_height))
     box = Box(int(small_box_width), int(small_box_depth), int(small_box_height))
-    best_pallet = fill_pallet(pallet, box, debug, log_file)
+    best_pallet = fill_pallet(pallet, box, debug=debug, log_file=log_file)
 
     global root
     
@@ -424,5 +424,5 @@ if __name__ == "__main__":
   log_file = 'fill_box_optimiser.log'
   printf_clear(log_file)
   # test_all(debug=False)
-  main(log_file, debug=True)
+  main(log_file, debug=False)
  
