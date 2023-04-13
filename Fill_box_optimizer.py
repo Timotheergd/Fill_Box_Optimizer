@@ -421,7 +421,7 @@ def test_all(debug=False):
   test_one_config(Pallet(310, 235, 250), Box(180, 139, 65), 8, num_test(), debug, log_file)
 
 if __name__ == "__main__":
-  log_file = 'fill_box_optimiser.log'
+  log_file = 'fill_box_optimizer.log'
   printf_clear(log_file)
   # test_all(debug=False)
   main(log_file, debug=False)
