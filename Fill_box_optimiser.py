@@ -1,248 +1,252 @@
-def printf_clear():
-  # with open('log.txt', 'w') as f:
-  #   f.write('Hi\n')
-  pass
+def printf_clear(log_file, debug=True):
+  # Clear the log file
+  with open(log_file, 'w') as f:
+    if debug:
+      f.write('Hi, this is the log file.\n')
 
-def printf(*text):
-  with open('log.txt', 'a', newline=None) as f:
+def printf(log_file, *text):
+  # Write the text in the log file
+  with open(log_file, 'a', newline=None) as f:
     for t in text:
       f.write(str(t))
     f.write("\n")
 
+class Box:
+  """
+  This class is a 3d object, a parallelepiped
+  This is use to define littles boxes that we put on a pallet (class )
+  """
 
-class Boite:
+  def __init__(self, _L=1, _w=1, _h=1):
+    self.L = _L # Lenght
+    self.w = _w # Width
+    self.h = _h # Height
 
-  def __init__(self, _L=1, _l=1, _h=1):
-    self.L = _L
-    self.l = _l
-    self.h = _h
-
-  def set_dim(self):
-    # printf("Veuillez entrer les valeurs suivantes :")
-    self.L = int(input("longueur : "))
-    self.l = int(input("largeur : "))
-    self.h = int(input("hauteur : "))
+  def ask_dim(self):
+    # Ask sizes of the object to the user
+    print("Please enter the following values of the box :")
+    self.L = int(input("Lenght : "))
+    self.w = int(input("Width : "))
+    self.h = int(input("Height : "))
 
   def get_dim(self):
-    return [self.L, self.l, self.h]
+    # return the dimensions of the box
+    return [self.L, self.w, self.h]
   
   def get_volume(self):
-    return self.L*self.l*self.h
+    # return the volume of the box
+    return self.L*self.w*self.h
 
 
-class Carton(Boite):
+class Pallet(Box):
+  """
+  This class can contain boxes. The goal is to put as much Box as possible in the pallet. 
+  """
 
-  def __init__(self, _L=1, _l=1, _h=1):
-    Boite.__init__(self, _L, _l, _h)
-    self.contenu = []
-    self.nb_boites = 0
+  def __init__(self, _L=1, _w=1, _h=1):
+    Box.__init__(self, _L, _w, _h)
+    self.content = [] # Content of the pallet. This is a list filled by [rotation, nb_L, nb_w, nb_h] : nb_L*nb_w*nb*h boxes are position with the rotation
+    self.nb_box = 0   # this keep up how many boxes are in the pallet
 
-  def add_boites(self, rotation, nb_L, nb_l, nb_h):
-    if (nb_L*nb_l*nb_h) > 0:
+  def add_box(self, rotation, nb_L, nb_w, nb_h):
+    """
+    Add boxes to the pallet.
+    There are nb_L box in the Lenght, nb_w boxes in the width and nb_h boxes in the height.
+    The rotation is define by the rotation variable.
+    """
+    if (nb_L*nb_w*nb_h) > 0: # if there are boxes to fit in the pallet
       merged=False
-      for i in range(len(self.contenu)):
-        if rotation==self.contenu[i][0]:
-          if (nb_L * nb_l * nb_h) > (self.contenu[i][1] * self.contenu[i][2] * self.contenu[i][3]):
-            self.contenu[i] = [rotation, nb_L, nb_l, nb_h] # replaself.contenu[i]e the values
-            self.nb_boites -= self.contenu[i][1] * self.contenu[i][2] * self.contenu[i][3]
-            self.nb_boites += nb_L * nb_l * nb_h
+      for i in range(len(self.content)):
+        if rotation==self.content[i][0]: # if boxes where already put with the same rotation
+          if (nb_L * nb_w * nb_h) > (self.content[i][1] * self.content[i][2] * self.content[i][3]): # if the number of boxes to fit is greater than the number of boxes already there
+            self.content[i] = [rotation, nb_L, nb_w, nb_h] # update of the number of boxes in this rotation
+            # And update of the number of boxes in the pallet
+            self.nb_box -= self.content[i][1] * self.content[i][2] * self.content[i][3]
+            self.nb_box += nb_L * nb_w * nb_h
           merged=True
-      if not merged:
-        self.contenu.append([rotation, nb_L, nb_l, nb_h])
-        self.nb_boites += nb_L * nb_l * nb_h
+      if not merged: # if none of the boxes are in the same rotation
+        # Add boxes to the content 
+        self.content.append([rotation, nb_L, nb_w, nb_h])
+        self.nb_box += nb_L * nb_w * nb_h
 
-  def remove_boites(self, rotation, nb_L, nb_l, nb_h):
-    if len(self.contenu) == 0: 
+  def remove_box(self, rotation, nb_L, nb_w, nb_h, log_file=".log"):
+    """
+    Remove boxes from the pallet from the rotation and the number of boxes in the lenght, width and height
+    """
+    if len(self.content) == 0: 
       return 
     try:
-      self.contenu.remove([rotation, nb_L, nb_l, nb_h])
-      self.nb_boites -= nb_L * nb_l * nb_h
+      self.content.remove([rotation, nb_L, nb_w, nb_h])
+      self.nb_box -= nb_L * nb_w * nb_h
     except:
-      printf("failed to remove boites from the carton"+"*"*10)
-      printf(f"{self.contenu=}")
+      printf(log_file, "failed to remove boites from the pallet"+"*"*10)
+      printf(log_file, f"{self.content=}")
 
   def __gt__(self, other):
-    return self.nb_boites > other.nb_boites
+    return self.nb_box > other.nb_box
 
   def copy(self):
-    new_carton = Carton(self.L, self.l, self.h)
-    new_carton.contenu = self.contenu[:]
-    new_carton.nb_boites = self.nb_boites
-
-    return new_carton
+    new_box = Pallet(self.L, self.w, self.h)
+    new_box.content = self.content[:]
+    new_box.nb_box = self.nb_box
+    return new_box
 
   def __str__(self):
-    return "printf Carton :\ndimensions : " + str(self.L) + "x" + str(self.l) + "x" + str(self.h) + "\nnb_boites : " + str(self.nb_boites) + "\ncontenu : " + str(self.contenu)
+    return "Pallet :\ndimensions : " + str(self.L) + "x" + str(self.w) + "x" + str(self.h) + "\nnb_boxes : " + str(self.nb_box) + "\ncontent : " + str(self.content)
 
   def combine(self, other):
-    # printf("COMBINE !!", str(self), str(other))
-    # self.nb_boites += other.nb_boites
-    for i in range(len(other.contenu)):
-      self.add_boites(other.contenu[i][0], other.contenu[i][1], other.contenu[i][2], other.contenu[i][3])
-    # self.contenu += other.contenu
-    # printf(self)
-    # printf("DONE !!")
+    for i in range(len(other.content)):
+      self.add_box(other.content[i][0], other.content[i][1], other.content[i][2], other.content[i][3])
 
-  def print_placement(self, print_to_console=False):
+  def print_way_fill(self, print_to_console=False):
+    """
+    Explain how you need to rotate the boxes in the pallet
+    """
     text_to_print=""
-    num_etape = 1
-    text_to_print+=f"Placement des boites dans le carton :\n{num_etape}. Positionnez le carton avec le long coté vers soi.\n"
-    if print_to_console: print(f"Placement des boites dans le carton :\n{num_etape}. Positionnez le carton avec le long coté vers soi.")
-    for step in self.contenu:
-      num_etape+=1
+    nb_step = 1
+    text_to_print+=f"Way to fill the pallet :\n{nb_step}. Position the pallet with the long side facing you.\n"
+    if print_to_console: print(f"Way to fill the pallet :\n{nb_step}. Position the pallet with the long side facing you.")
+    for step in self.content:
+      nb_step+=1
       rotation_text=""
       if step[0]==1:
-          rotation_text="à plat dans le sens de la longueur du carton"
+          rotation_text="flat along the length of the pallet"
       elif step[0]==2:
-          rotation_text="verticalement sur la longue tranche, dans le sens de la longueur du carton"
+          rotation_text="vertically on the long edge, along the length of the pallet"
       elif step[0]==3:
-          rotation_text="à plat dans le sens de la largeur du carton"
+          rotation_text="flat along the width of the pallet"
       elif step[0]==4:
-          rotation_text="verticalement sur la petite tranche, parallèle à la longueur du carton"
+          rotation_text="vertically on the short edge, parallel to the length of the pallet"
       elif step[0]==5:
-          rotation_text="verticalement sur la longue tranche, dans le sens de la largeur du carton"
+          rotation_text="vertically on the long edge, along the width of the pallet"
       elif step[0]==6:
-          rotation_text="verticalement sur la petite tranche, parallèle à la largeur du carton"
+          rotation_text="vertically on the short edge, parallel to the width of the pallet"
       
-      if print_to_console:print(f"{num_etape}. Positionnez (L*l*h) {step[1]}*{step[2]}*{step[3]} = {step[1]*step[2]*step[3]} présentoir(s) " + rotation_text)
-      text_to_print+=f"{num_etape}. Positionnez {step[1]*step[2]*step[3]} présentoir(s) " + rotation_text + "\n"
+      if print_to_console: print(f"{nb_step}. Position (L*w*h) {step[1]}*{step[2]}*{step[3]} = {step[1]*step[2]*step[3]} box(es) " + rotation_text)
+      text_to_print+=f"{nb_step}. Position {step[1]*step[2]*step[3]} box(es) " + rotation_text + "\n"
     
     return text_to_print
 
   def print_total(self, print_to_console=False):
+    """
+    Return text : how many boxes are positioned in the pallet ?, with the number in an other variable, to print it in bold later
+    """
     if print_to_console:
-      print(f"Vous avez maintenant placé {self.nb_boites} boite(s) dans le carton")
-    text_to_print_start=f"Vous avez maintenant placé"
-    text_to_print_bold=f" {self.nb_boites} "
-    text_to_print_end=f"présentoir(s) dans le carton\n"
+      print(f"You have now placed {self.nb_box} box(es) in the pallet")
+    text_to_print_start=f"You have now placed"
+    text_to_print_bold=f" {self.nb_box} "
+    text_to_print_end=f"box(es) in the pallet\n"
     return (text_to_print_start, text_to_print_bold, text_to_print_end)
 
-def possibilites(l):
+def possibilities(dimensions):
   # renvoie lensemble des arrangements possibles de la liste (3d)
+  """
+  Return all arragement of the list
+  Each arrangement is associated with a number, this correspond to the rotation
+  [L, w, h] -> 1
+  [L, h, w] -> 2
+  [w, L, h] -> 3
+  [w, h, L] -> 4
+  [h, L, w] -> 5
+  [h, w, L] -> 6
+  """
   p = []
 
   for i in range(3):
     k = [0, 1, 2]
     n1 = k[i]
-
     k.remove(n1)
     for j in range(2):
       n2 = k[j % 2]
       n3 = k[(j + 1) % 2]
-      a = [l[n1], l[n2], l[n3]]
-      # printf(a)
+      a = [dimensions[n1], dimensions[n2], dimensions[n3]]
       p.append(a)
 
   return p
 
-"""
-[180, 139, 65]
-[180, 65, 139]
-[139, 180, 65]
-[139, 65, 180]
-[65, 180, 139]
-[65, 139, 180]
-"""
 
-def fill_carton(_carton,
-                presentoir,
-                fill_reste=True,
-                _carton_precedent=Carton(),
+
+def fill_pallet(_pallet,
+                box,
+                fill_rest=True,
+                _previous_pallet=Pallet(),
                 _print=False):
-  best_carton = Carton()
-
-  # print(f"{_print=}")
-               
+  best_pallet = Pallet()               
   
-  # for carton in liste_carton:
-  # nb_cartons_total = nb_cartons_precedent
-  # nb_cartons = 0
   n = 0  # pour savoir le nombre d'itération de dim
-  for dim in possibilites(presentoir.get_dim()):
-    carton = _carton.copy()
+  for dim in possibilities(box.get_dim()):
+    carton = _pallet.copy()
     cartons_reste = []
-    carton_precedent = _carton_precedent.copy()   
+    carton_precedent = _previous_pallet.copy()  
+
     if _print:
-      if (fill_reste): printf("\n" * 2 + "-+*+-" * 10 + "________base")
-      else: printf("________reste")
-      printf(dim, " in ", carton.get_dim())
+      if (fill_rest): printf(log_file, "\n" * 2 + "-+*+-" * 10 + "________base")
+      else: printf(log_file, "________reste")
+      printf(log_file, dim, " in ", carton.get_dim())
 
     n += 1
-    if _print: printf("n=", n)
+    if _print: printf(log_file, "n=", n)
 
     nb_L = carton.L // dim[0]
     L = dim[0] * nb_L
-    
-    # printf(f"{L_r=}")
 
-    nb_l = carton.l // dim[1]
-    l = dim[1] * nb_l
-    
-    # printf(f"{l_r=}")
+    nb_w = carton.w // dim[1]
+    w = dim[1] * nb_w
 
     nb_h = carton.h // dim[2]
     h = dim[2] * nb_h
-    
-    # printf(f"{h_r=}")
-    L_r, l_r, h_r = 0, 0, 0
-    if not nb_L*nb_l*nb_h == 0:
+
+    L_r, w_r, h_r = 0, 0, 0
+    if not nb_L*nb_w*nb_h == 0:
       L_r = carton.L - L
-      l_r = carton.l - l
+      w_r = carton.w - w
       h_r = carton.h - h
 
-    # actual_state.append([n, ["L", nb_L], ["l", nb_l], ["h", nb_h]])
-    carton.add_boites(n, nb_L, nb_l, nb_h)
+    carton.add_box(n, nb_L, nb_w, nb_h)
 
     carton_precedent.combine(carton)
 
-    # printf(f"{nb_h}")
-    # nb_cartons = nb_L * nb_l * nb_h
-    # if (fill_reste):
-    # nb_cartons_total += nb_cartons
     if _print: 
-      printf("nb presentoirs=", nb_L, "x", nb_l, "x", nb_h, " =", nb_L * nb_l * nb_h)
-      printf("nb presentores du carton=", nb_L, "x", nb_l, "x", nb_h, " =", carton.nb_boites)
-      printf("total=", carton_precedent.nb_boites)
-      printf("total=", carton_precedent.contenu)
-      printf("total=", L, "x", l, "x", h)
-      printf("reste=", L_r, "x", l_r, "x", h_r)
+      printf(log_file, "nb presentoirs=", nb_L, "x", nb_w, "x", nb_h, " =", nb_L * nb_w * nb_h)
+      printf(log_file, "nb presentores du carton=", nb_L, "x", nb_w, "x", nb_h, " =", carton.nb_box)
+      printf(log_file, "total=", carton_precedent.nb_box)
+      printf(log_file, "total=", carton_precedent.content)
+      printf(log_file, "total=", L, "x", w, "x", h)
+      printf(log_file, "reste=", L_r, "x", w_r, "x", h_r)
 
-      # CHECK IF IT IS THE BEST CARTON
-    if carton_precedent > best_carton:
-      best_carton = carton_precedent.copy()
+    # CHECK IF IT IS THE BEST CARTON
+    if carton_precedent > best_pallet:
+      best_pallet = carton_precedent.copy()
 
     # Fill the gaps
-    if (fill_reste):
-      carton_L = Carton(L_r, carton.l, carton.h)
-      carton_l = Carton(carton.L, l_r, carton.h)
-      carton_h = Carton(carton.L, carton.l, h_r)
+    if (fill_rest):
+      carton_L = Pallet(L_r, carton.w, carton.h)
+      carton_l = Pallet(carton.L, w_r, carton.h)
+      carton_h = Pallet(carton.L, carton.w, h_r)
       cartons_reste.append(carton_L)
       cartons_reste.append(carton_l)
       cartons_reste.append(carton_h)
       if _print: 
-        printf("="*10 + "\nAFFICHAGE DES CARTONS FILLS \n" + "="*10)
+        printf(log_file, "="*10 + "\nPallets to fill \n" + "="*10)
         for c in cartons_reste:
-          printf(c)
+          printf(log_file, c)
       for carton in cartons_reste:
-        best_little_carton_fill = fill_carton(carton, presentoir, False, carton_precedent.copy(), _print)
+        best_little_carton_fill = fill_pallet(carton, box, False, carton_precedent.copy(), _print)
         carton_precedent.combine(best_little_carton_fill)
 
-        if carton_precedent > best_carton:
-          best_carton = carton_precedent.copy()
+        if carton_precedent > best_pallet:
+          best_pallet = carton_precedent.copy()
 
-    carton.remove_boites(n, nb_L, nb_l, nb_h)
+    carton.remove_box(n, nb_L, nb_w, nb_h)
 
   if _print: 
-    printf("\n\n\n")
-    printf("*" * 20)
-    # printf("nb_cartons=", nb_cartons_total)
-    printf("best carton=", best_carton.nb_boites)
-    printf("contenu=", best_carton.contenu)
-    printf("*" * 20)
-  return best_carton.copy()
-
-#***********************************************************************************
-
+    printf(log_file, "\n\n\n")
+    printf(log_file, "*" * 20)
+    # printf(log_file, "nb_cartons=", nb_cartons_total)
+    printf(log_file, "best pallet=", best_pallet.nb_box)
+    printf(log_file, "content=", best_pallet.content)
+    printf(log_file, "*" * 20)
+  return best_pallet.copy()
 
 import tkinter as tk
 
@@ -269,9 +273,9 @@ def validate_sizes():
     big_box_size = f"{big_box_width} x {big_box_height} x {big_box_depth}"
     small_box_size = f"{small_box_width} x {small_box_height} x {small_box_depth}"
 
-    carton = Carton(int(big_box_width), int(big_box_depth), int(big_box_height))
-    presentoir = Boite(int(small_box_width), int(small_box_depth), int(small_box_height))
-    best_carton = fill_carton(carton, presentoir)
+    carton = Pallet(int(big_box_width), int(big_box_depth), int(big_box_height))
+    box = Box(int(small_box_width), int(small_box_depth), int(small_box_height))
+    best_pallet = fill_pallet(carton, box)
 
     global root
     
@@ -281,12 +285,10 @@ def validate_sizes():
     
     result_label.configure(state="normal")
     result_label.delete("1.0",tk.END)
-    result_label.insert("1.0", f"Taille du carton: {big_box_size}\nTaille du présentoir: {small_box_size}\n\n" + str(best_carton.print_placement()))
+    result_label.insert("1.0", f"Taille du carton: {big_box_size}\nTaille du présentoir: {small_box_size}\n\n" + str(best_pallet.print_way_fill()))
     end_pos = int(result_label.index("end").split(".")[0])
-    print(end_pos)
 
-    # result_label.tag_add("bold", "1.7", "1.12")
-    text_start, text_bold, text_end = best_carton.print_total()
+    text_start, text_bold, text_end = best_pallet.print_total()
     
     result_label.insert("end", text_start, ('normal'))
     result_label.insert("end", text_bold, "Arial bold 12")
@@ -317,7 +319,7 @@ def ui():
   root.geometry("400x350")
 
   global big_box_label
-  big_box_label = tk.Label(root, text="Carton", font="Verdana 11 underline") 
+  big_box_label = tk.Label(root, text="Pallet", font="Verdana 11 underline") 
   big_box_label.pack()
 
   global big_box_width_label
@@ -384,59 +386,42 @@ def ui():
   validation_label = tk.Label(root, fg="red")
   validation_label.pack()
 
-  # global root
   root.mainloop()
 
-
-def main():
-  # dimensions L : longueur, l : largeur, h : hauteur
-  # carton = Carton(300, 200, 300) # test 1
-  # carton = Carton(310, 235, 250) # test 2
-  # carton = Carton(300, 235, 177) # 10p LBE
-  # carton = Carton(365, 315, 220) # 10p Nutripure
-  
-  # print("Carton")
-  # carton.set_dim()
-  # presentoir = Boite(200, 99, 99) #test 1
-  # Nutripure = 180, 139, 65
-  # LBE = 176, 106, 53
-  # presentoir = Boite(180, 139, 65) # test 2
-  # print("presentoir")
-  # presentoir.set_dim()
-
-  # best_carton = fill_carton(carton, presentoir)
-  # ui(best_carton.print_placement())
+def main(log_file):
   ui()
 
-def test_one_config(carton, presentoir, nb_boites_theorique, n, print=False):
-  if (print): printf("\n"*3+"+-"*20+"\n"*3)
-  best_carton = fill_carton(carton, presentoir, _print=print)
-  best_carton.print_placement(True)
-  if best_carton.nb_boites == nb_boites_theorique:
-    printf(u"\u2705" + f" TEST {n} PASSED with {100*best_carton.nb_boites*presentoir.get_volume()//carton.get_volume()} % of the volume filled\n")
+def test_one_config(carton, box, nb_boites_theorique, n, print=False):
+  if (print): printf(log_file, "\n"*3+"+-"*20+"\n"*3)
+  best_pallet = fill_pallet(carton, box, _print=print)
+  best_pallet.print_way_fill(True)
+  if best_pallet.nb_box == nb_boites_theorique:
+    printf(log_file, u"\u2705" + f" TEST {n} PASSED with {100*best_pallet.nb_box*box.get_volume()//carton.get_volume()} % of the volume filled\n")
   else:
-    printf(u"\u274C" + f" TEST {n} FAILED with {100*best_carton.nb_boites*presentoir.get_volume()//carton.get_volume()} % of the volume filled : nb_boites={best_carton.nb_boites}\n"+best_carton.print_placement())
+    printf(log_file, u"\u274C" + f" TEST {n} FAILED with {100*best_pallet.nb_box*box.get_volume()//carton.get_volume()} % of the volume filled : nb_box={best_pallet.nb_box}\n"+best_pallet.print_way_fill())
 
 def num_test():
     if hasattr(num_test, "num"):
-        num_test.num += 1           # increment if not first call
+        num_test.num += 1 # increment if not first call
     else:
-        num_test.num = 1         # initialize on first call
+        num_test.num = 1 # initialize on first call
     return num_test.num
 
-
 def test_all(_print=False):
-  printf("*"*20+"\n TESTS \n"+"*"*20)
+  # This tests are verified by a human.
+
+  printf(log_file, "*"*20+"\n TESTS \n"+"*"*20)
   
-  test_one_config(Carton(300, 235, 177), Boite(176, 106, 53), 10, num_test(), _print) # TEST 1 (LBE)
-  test_one_config(Carton(365, 315, 220), Boite(180, 139, 65), 13, num_test(), _print) # TEST 2 (Nutripure) Vol carton:25294500 Vol pres:1626300 Vol12pres:19515600
-  test_one_config(Carton(500, 400, 300), Boite(400, 300, 100), 5, num_test(), _print) # Vol carton=60.000.000 Vol pres=12.000.000
-  test_one_config(Carton(500, 400, 400), Boite(400, 300, 100), 6, num_test(), _print)
-  test_one_config(Carton(600, 400, 400), Boite(400, 300, 100), 8, num_test(), _print)
-  test_one_config(Carton(310, 235, 250), Boite(180, 139, 65), 8, num_test(), _print)
+  test_one_config(Pallet(300, 235, 177), Box(176, 106, 53), 10, num_test(), _print)
+  test_one_config(Pallet(365, 315, 220), Box(180, 139, 65), 13, num_test(), _print)
+  test_one_config(Pallet(500, 400, 300), Box(400, 300, 100), 5, num_test(), _print)
+  test_one_config(Pallet(500, 400, 400), Box(400, 300, 100), 6, num_test(), _print)
+  test_one_config(Pallet(600, 400, 400), Box(400, 300, 100), 8, num_test(), _print)
+  test_one_config(Pallet(310, 235, 250), Box(180, 139, 65), 8, num_test(), _print)
 
 if __name__ == "__main__":
-  printf_clear()
-  # test_all(_print=False)
-  main()
+  log_file = 'fill_box_optimiser.log'
+  printf_clear(log_file, False)
+  test_all(_print=False)
+  # main(log_file)
  
